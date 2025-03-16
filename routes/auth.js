@@ -38,7 +38,7 @@ const sendOtpEmail = async (email, subject, templatePath, userName, otp) => {
 
 // 📌 User Registration
 router.post("/register", async (req, res) => {
-  const { name, email, password, phone } = req.body;
+  const { name, email, password, phone , pets } = req.body;
 
   if (!name || !email || !password || !phone) {
     return res.status(400).json({ message: "All fields are required" });
@@ -50,7 +50,7 @@ router.post("/register", async (req, res) => {
       return res.status(409).json({ message: "Email already registered" });
     }
 
-    const newUser = new User({ name, email, password, phone });
+    const newUser = new User({ name, email, password, phone , pets });
     await newUser.save();
 
     res.status(200).json({
@@ -58,7 +58,9 @@ router.post("/register", async (req, res) => {
       userId: newUser._id,
       name: newUser.name,
       email: newUser.email,
+      pets : newUser.pets,
     });
+
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
@@ -80,9 +82,38 @@ router.post("/authenticate", async (req, res) => {
       userId: user._id,
       name: user.name,
       email: user.email,
+      pets : user.pets,
     });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post('/update-pet-stats', async (req, res) => {
+  const { userId, pets } = req.body;
+
+  if (!userId || !pets) {
+    return res.status(400).json({ message: 'Invalid data provided' });
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update pets data
+    user.pets = pets;
+
+    await user.save();
+
+    res.status(200).json({
+      message: 'Pet stats updated successfully',
+      pets: user.pets,
+    });
+  } catch (err) {
+    console.error('Error updating pet stats:', err);
+    res.status(500).json({ message: 'Failed to update pet stats' });
   }
 });
 
@@ -99,6 +130,33 @@ router.post("/getForgetRequest", async (req, res) => {
   await sendOtpEmail(email, "Password Reset OTP", "../templates/otp-template.html", user.name, otp);
   res.status(200).json({ message: "OTP sent for password reset." });
 });
+
+router.post('/update-pets', async (req, res) => {
+  const { userId, pets } = req.body;
+
+  if (!userId || !pets) {
+    return res.status(400).json({ message: 'User ID and pets are required' });
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.pets = pets;
+    await user.save();
+
+    res.status(200).json({
+      message: 'Pets updated successfully',
+      pets: user.pets,
+    });
+  } catch (err) {
+    console.error('Update error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 
 // 📌 Email Verification OTP
 router.post("/emailVerification", async (req, res) => {
