@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // MongoDB Connection
 mongoose
-  .connect("mongodb+srv://chatu890:4WPAAQqvvqG3ID3S@pettrove.ascesbr.mongodb.net/?retryWrites=true&w=majority&appName=PetTrove", {
+  .connect("mongodb+srv://chatu890:4WPAAQqvvqG3ID3S@pettrove.ascesbr.mongodb.net/pettrove?retryWrites=true&w=majority&appName=PetTrove", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
