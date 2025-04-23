@@ -13,13 +13,13 @@ app.use(express.urlencoded({ extended: true }));
 
 // MongoDB Connection
 mongoose
-  .connect("mongodb://localhost:27017/PetTrove", {
+  .connect("mongodb+srv://chatu890:4WPAAQqvvqG3ID3S@pettrove.ascesbr.mongodb.net/?retryWrites=true&w=majority&appName=PetTrove", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .catch((err) => {
     console.error("MongoDB connection error:", err);
-  });
+  }).then(() => {console.log("MongoDB connected successfully")});
 
 // Routes
 app.use("/auth", authRoutes);
@@ -43,4 +43,8 @@ setInterval(() => {
 const PORT = 80;
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+app.get('/', (req, res) => {
+  res.send('Hello from Vercel!');
 });
